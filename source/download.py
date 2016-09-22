@@ -6,15 +6,15 @@ from tkFileDialog import askopenfilename
 import tkMessageBox
 import csv
 
-def save_image_details(upc, imagefromfirsturl, imagefromsecondurl):
+def save_image_details(upc, url1, url2, imagefromfirsturl, imagefromsecondurl):
     if (imagefromfirsturl is False):
         imagefromfirsturl = '404'
     elif (imagefromsecondurl is False):
         imagefromsecondurl = '404'
-    outputfilename = "outputforimagenameandupc.txt"
+    outputfilename = "opwidurl.txt"
     text_file = open(os.getcwd() + constants.OUTPUT_DIR + outputfilename, "a")
     outputpath = os.getcwd() + constants.SIMILARITY_CHECK_OUTPUT
-    text_file.write("-k %s -f1 %s -f2 %s -o %s\n" % (upc, imagefromfirsturl, imagefromsecondurl, outputpath))
+    text_file.write("-k %s -u1 %s -u2 %s -f1 %s -f2 %s -o %s\n" % (upc, url1, url2, imagefromfirsturl, imagefromsecondurl, outputpath))
     text_file.close()
 
 
@@ -53,6 +53,8 @@ def main():
 
     rownum = 0
     upc = ''
+    firsturl = ''
+    secondurl = ''
     imagefromfirsturl = ''
     imagefromsecondurl = ''
     for row in reader:
@@ -67,14 +69,16 @@ def main():
                 if(csvcolheader == 'key'):
                     upc = col
                 elif (csvcolheader == 'url1'):
-                    imagefromfirsturl = download_photo(col,upc+'_url1.jpg')
+                    imagefromfirsturl = download_photo(col.strip('"'),upc+'_url1.jpg')
+                    firsturl = col.strip('"')
                 elif (csvcolheader == 'url2'):
-                    imagefromsecondurl = download_photo(col, upc + '_url2.jpg')
+                    imagefromsecondurl = download_photo(col.strip('"'), upc + '_url2.jpg')
+                    secondurl = col.strip('"')
                 colnum += 1
 
             print imagefromsecondurl
             print imagefromfirsturl
-            save_image_details(upc, imagefromfirsturl, imagefromsecondurl)
+            save_image_details(upc, firsturl, secondurl, imagefromfirsturl, imagefromsecondurl)
         rownum += 1
 
     ifile.close()
